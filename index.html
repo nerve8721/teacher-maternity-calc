@@ -1,6 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+  
+  <script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: 'hsl(0 0% 98%)',
+          foreground: 'hsl(222.2 47.4% 11.2%)',
+          card: 'hsl(0 0% 100%)',
+          'card-foreground': 'hsl(222.2 47.4% 11.2%)',
+          primary: 'hsl(220 90% 56%)',
+          'primary-foreground': 'hsl(0 0% 100%)',
+          border: 'hsl(217.2 32.6% 90%)',
+          ring: 'hsl(215 20.2% 65%)',
+        },
+        borderRadius: {
+          DEFAULT: '1rem',
+        }
+      }
+    }
+  }
+</script>
+
+<!-- ② Pull in Tailwind CSS from the CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --border: 217.2 32.6% 90%;
+    --ring: 215 20.2% 65%;
+    --radius: 1rem;
+    --primary: 220 90% 56%;
+    --primary-foreground: 0 0% 100%;
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', ui-sans-serif, system-ui;
+  }
+</style>
   <link rel="preconnect" href="https://fonts.gstatic.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
