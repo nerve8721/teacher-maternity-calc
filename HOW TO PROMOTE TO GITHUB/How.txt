@@ -1,0 +1,16 @@
+cd /c/Users/Liam/Projects/teacher-maternity-calc   # your live-repo folder
+
+# make sure you’re on the right branch
+git checkout main
+
+# see what’s changed
+git status
+
+# stage everything
+git add .
+
+# commit with a clear message
+git commit -m "chore: update styling and config for production"
+
+# push to origin/main
+git push origin main

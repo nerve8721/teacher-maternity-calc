@@ -114,7 +114,8 @@ export default function MaternityLeaveCalculator() {
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
       <div className="w-full max-w-4xl space-y-8">
         {/* ─── Input card ─── */}
-        <Card className="bg-card rounded-xl shadow">
+        <Card className="bg-card border border-border rounded-xl shadow">
+
           <CardContent className="p-6 space-y-6">
             <h1 className="text-2xl font-semibold text-center">Teacher Maternity &amp; SPL Pay Calculator</h1>
 
@@ -149,7 +150,7 @@ export default function MaternityLeaveCalculator() {
 
         {/* ─── Totals summary ─── */}
         {totals && (
-          <Card className="bg-card rounded-xl shadow">
+<Card className="bg-card border border-border rounded-xl shadow">
             <CardContent className="p-6 grid gap-6">
               <h2 className="text-xl font-semibold text-center mb-2">Net pay summary (52 weeks)</h2>
               <div className="grid md:grid-cols-3 gap-4 text-center">
@@ -170,9 +171,10 @@ export default function MaternityLeaveCalculator() {
           </Card>
         )}
 
+
         {/* ─── Phase breakdown table ─── */}
         {phaseRows && (
-          <Card className="bg-card rounded-xl shadow">
+<Card className="bg-card border border-border rounded-xl shadow">
             <CardContent className="p-4 overflow-x-auto">
               <h2 className="text-xl font-semibold mb-4 text-center">Phase‑by‑phase breakdown</h2>
               <Table>
@@ -191,6 +193,44 @@ export default function MaternityLeaveCalculator() {
                       <TableCell className="text-right">{r.weeks}</TableCell>
                       <TableCell className="text-right">{r.netPerWeek.toFixed(2)}</TableCell>
                       <TableCell className="text-right font-medium">{r.netTotal.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+  
+  return (
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+      <div className="w-full max-w-4xl space-y-8">
+        <Button onClick={calculate} className="w-full md:w-auto">
+          Calculate Weekly Breakdown
+        </Button>
+
+        {weekRows && (
+          <Card className="bg-card rounded-xl shadow">
+            <CardContent className="p-4 overflow-x-auto">
+              <h2 className="text-xl font-semibold mb-4 text-center">Weekly Breakdown</h2>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Week #</TableHead>
+                    <TableHead>Pay</TableHead>
+                    <TableHead>Leave Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {weekRows.map((r) => (
+                    <TableRow key={`${r.date}-${r.weekNumber}`}>
+                      <TableCell>{r.date}</TableCell>
+                      <TableCell>{r.weekNumber}</TableCell>
+                      <TableCell>{r.pay}</TableCell>
+                      <TableCell>{r.leave}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
