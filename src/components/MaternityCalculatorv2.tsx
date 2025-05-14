@@ -1,92 +1,50 @@
 import React, { useState } from 'react';
 
-// Define type for each phase in the breakdown
-interface PhaseData {
-  type: string;
-  start: number;
-  end: number;
-  amount: number;
-}
-
-// Define type for weekly data
-interface WeeklyData {
-  date: string;
-  weekNumber: number;
-  weeklyPay: string;
-  optimizedPay: string;
-  status: string;
-  payType: string;
-}
-
-// Define type for eligibility options
-interface EligibilityOption {
-  value: string;
-  label: string;
-}
-
-// Define type for pay scheme options
-interface PaySchemeOption {
-  value: string;
-  label: string;
-}
-
-// Define props for ProgressBar component
-interface ProgressBarProps {
-  current: number;
-  total: number;
-}
-
-const MaternityCalculator: React.FC = () => {
+const App = () => {
   // Step tracking state
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const totalSteps: number = 9; // Updated from 11 to 9 since we consolidated school breaks
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 11; // Total number of steps/questions
   
   // Form state
-  const [annualSalary, setAnnualSalary] = useState<string>('');
-  const [maternityStartDate, setMaternityStartDate] = useState<string>('');
-  const [dueDateBaby, setDueDateBaby] = useState<string>('');
-  const [plannedReturnDate, setPlannedReturnDate] = useState<string>('');
+  const [annualSalary, setAnnualSalary] = useState('');
+  const [maternityStartDate, setMaternityStartDate] = useState('');
+  const [dueDateBaby, setDueDateBaby] = useState('');
+  const [plannedReturnDate, setPlannedReturnDate] = useState('');
   
   // Term break dates
-  const [octoberHalfTermStart, setOctoberHalfTermStart] = useState<string>('');
-  const [octoberHalfTermEnd, setOctoberHalfTermEnd] = useState<string>('');
-  const [christmasBreakStart, setChristmasBreakStart] = useState<string>('');
-  const [christmasBreakEnd, setChristmasBreakEnd] = useState<string>('');
-  const [februaryHalfTermStart, setFebruaryHalfTermStart] = useState<string>('');
-  const [februaryHalfTermEnd, setFebruaryHalfTermEnd] = useState<string>('');
-  const [easterBreakStart, setEasterBreakStart] = useState<string>('');
-  const [easterBreakEnd, setEasterBreakEnd] = useState<string>('');
-  const [mayHalfTermStart, setMayHalfTermStart] = useState<string>('');
-  const [mayHalfTermEnd, setMayHalfTermEnd] = useState<string>('');
-  const [summerBreakStart, setSummerBreakStart] = useState<string>('');
-  const [summerBreakEnd, setSummerBreakEnd] = useState<string>('');
+  const [easterBreakStart, setEasterBreakStart] = useState('');
+  const [easterBreakEnd, setEasterBreakEnd] = useState('');
+  const [mayHalfTermStart, setMayHalfTermStart] = useState('');
+  const [mayHalfTermEnd, setMayHalfTermEnd] = useState('');
+  const [summerBreakStart, setSummerBreakStart] = useState('');
+  const [summerBreakEnd, setSummerBreakEnd] = useState('');
 
   // Eligibility and pay scheme
-  const [eligibility, setEligibility] = useState<string>('');
-  const [payScheme, setPayScheme] = useState<string>('');
+  const [eligibility, setEligibility] = useState('');
+  const [payScheme, setPayScheme] = useState('');
   
   // Results state
-  const [showResults, setShowResults] = useState<boolean>(false);
-  const [weeklyBreakdown, setWeeklyBreakdown] = useState<WeeklyData[]>([]);
-  const [normalMaternityPay, setNormalMaternityPay] = useState<number>(0);
-  const [optimizedSplPay, setOptimizedSplPay] = useState<number>(0);
-  const [extraGain, setExtraGain] = useState<number>(0);
-  const [phaseBreakdown, setPhaseBreakdown] = useState<PhaseData[]>([]);
+  const [showResults, setShowResults] = useState(false);
+  const [weeklyBreakdown, setWeeklyBreakdown] = useState([]);
+  const [normalMaternityPay, setNormalMaternityPay] = useState(0);
+  const [optimizedSplPay, setOptimizedSplPay] = useState(0);
+  const [extraGain, setExtraGain] = useState(0);
+  const [phaseBreakdown, setPhaseBreakdown] = useState([]);
 
   // Helper functions for date manipulation
-  const formatDate = (dateString: string): string => {
+  const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   };
 
-  const addWeeks = (date: Date | string, weeks: number): Date => {
+  const addWeeks = (date, weeks) => {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + weeks * 7);
     return newDate;
   };
 
-  const isWithinInterval = (date: Date | string, start: string, end: string): boolean => {
+  const isWithinInterval = (date, start, end) => {
     const checkDate = new Date(date);
     const startDate = new Date(start);
     const endDate = new Date(end);
@@ -94,8 +52,8 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Generate all Mondays between start and end dates
-  const getMondays = (startDateStr: string, endDateStr: string): Date[] => {
-    const mondays: Date[] = [];
+  const getMondays = (startDateStr, endDateStr) => {
+    const mondays = [];
     const start = new Date(startDateStr);
     const end = new Date(endDateStr);
     
@@ -118,23 +76,23 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Navigation functions
-  const nextStep = (): void => {
+  const nextStep = () => {
     setCurrentStep(Math.min(currentStep + 1, totalSteps));
   };
 
-  const prevStep = (): void => {
+  const prevStep = () => {
     setCurrentStep(Math.max(currentStep - 1, 1));
   };
 
   // Calculate weekly statutory maternity pay (SMP)
-  const calculateWeeklySMP = (weekNumber: number): number => {
+  const calculateWeeklySMP = (weekNumber) => {
     // Current SMP rates - this would need updating yearly
     const weeklyAmount = weekNumber <= 6 ? Number(annualSalary) / 52 * 0.9 : 184.03;
     return Math.min(weeklyAmount, Number(annualSalary) / 52 * 0.9);
   };
 
   // Calculate weekly pay based on scheme and week number
-  const calculateWeeklyPay = (weekNumber: number): number => {
+  const calculateWeeklyPay = (weekNumber) => {
     const weeklyBaseSalary = Number(annualSalary) / 52;
     
     // Apply different pay schemes
@@ -202,26 +160,8 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Check if a date falls within any school break period
-  const isInSchoolBreak = (date: Date | string): string | false => {
+  const isInSchoolBreak = (date) => {
     const dateObj = new Date(date);
-    
-    // Check October half-term
-    if (octoberHalfTermStart && octoberHalfTermEnd && 
-        isWithinInterval(dateObj, octoberHalfTermStart, octoberHalfTermEnd)) {
-      return 'October Half-Term';
-    }
-    
-    // Check Christmas break
-    if (christmasBreakStart && christmasBreakEnd && 
-        isWithinInterval(dateObj, christmasBreakStart, christmasBreakEnd)) {
-      return 'Christmas Break';
-    }
-    
-    // Check February half-term
-    if (februaryHalfTermStart && februaryHalfTermEnd && 
-        isWithinInterval(dateObj, februaryHalfTermStart, februaryHalfTermEnd)) {
-      return 'February Half-Term';
-    }
     
     // Check Easter break
     if (easterBreakStart && easterBreakEnd && 
@@ -245,7 +185,7 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Get pay type description based on week number
-  const getPayType = (weekNumber: number): string => {
+  const getPayType = (weekNumber) => {
     switch (payScheme) {
       case '4_2_12':
         if (weekNumber <= 4) return '100% Pay';
@@ -288,7 +228,7 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Calculate the maternity and SPL breakdown
-  const calculateBreakdown = (): void => {
+  const calculateBreakdown = () => {
     if (!maternityStartDate || !annualSalary || !eligibility || !payScheme) {
       alert('Please fill in all required fields');
       return;
@@ -300,18 +240,18 @@ const MaternityCalculator: React.FC = () => {
       : addWeeks(startDate, 52);
     
     // Generate all Mondays in the maternity period
-    const weeksInPeriod = getMondays(startDate.toString(), endDate.toString());
+    const weeksInPeriod = getMondays(startDate, endDate);
     
     let normalTotal = 0;
     let optimizedTotal = 0;
-    let weeklyData: WeeklyData[] = [];
-    let phaseData: PhaseData[] = [];
-    let currentPhase: PhaseData = { type: '', start: 0, end: 0, amount: 0 };
+    let weeklyData = [];
+    let phaseData = [];
+    let currentPhase = { type: '', start: 0, end: 0, amount: 0 };
     
     weeksInPeriod.forEach((weekStart, index) => {
       const weekNumber = index + 1;
       const weeklyPay = calculateWeeklyPay(weekNumber);
-      const formattedDate = formatDate(weekStart.toString());
+      const formattedDate = formatDate(weekStart);
       const breakType = isInSchoolBreak(weekStart);
       
       // Phase tracking for breakdown
@@ -369,14 +309,14 @@ const MaternityCalculator: React.FC = () => {
   };
 
   // Eligibility options
-  const eligibilityOptions: EligibilityOption[] = [
+  const eligibilityOptions = [
     { value: 'both_eligible', label: 'Both parents eligible' },
     { value: 'partner_not_eligible', label: 'Partner not eligible to take leave but meets requirements for me to' },
     { value: 'not_eligible', label: 'Not eligible' }
   ];
 
   // Pay scheme options
-  const paySchemeOptions: PaySchemeOption[] = [
+  const paySchemeOptions = [
     { value: '4_2_12', label: '4 weeks at 100%, 2 weeks at 90% plus 12 weeks at 50% + SMP' },
     { value: '13_weeks_100', label: '13 weeks 100%' },
     { value: '6_12', label: '6 weeks 100%, 12 weeks at 50% + SMP' },
@@ -386,7 +326,7 @@ const MaternityCalculator: React.FC = () => {
   ];
 
   // Component: Progress Bar
-  const ProgressBar: React.FC<ProgressBarProps> = ({ current, total }) => {
+  const ProgressBar = ({ current, total }) => {
     const percentage = (current / total) * 100;
     
     return (
@@ -620,187 +560,150 @@ const MaternityCalculator: React.FC = () => {
         );
       
       case 7:
-  return (
-    <div className="text-center">
-      <h3 className="text-xl font-semibold mb-4">School Term Breaks</h3>
-      <p className="mb-6 text-gray-600">
-        Please enter the dates for all applicable school breaks during your maternity period. Use the Government school term and holiday checker if you don't already know these for your area: <a href="https://www.gov.uk/school-term-holiday-dates">Check Now</a>
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        {/* October Half-Term */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">October Half-Term</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={octoberHalfTermStart}
-              onChange={e => setOctoberHalfTermStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+        return (
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-4">Easter Break</h3>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={easterBreakStart}
+                onChange={(e) => setEasterBreakStart(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={easterBreakEnd}
+                onChange={(e) => setEasterBreakEnd(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={prevStep} 
+                className="px-6 py-3 rounded-md font-medium text-lg bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                Back
+              </button>
+              <button 
+                onClick={nextStep} 
+                disabled={Boolean(easterBreakStart) !== Boolean(easterBreakEnd)}
+                className={`px-6 py-3 rounded-md font-medium text-lg ${
+                  Boolean(easterBreakStart) === Boolean(easterBreakEnd)
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={octoberHalfTermEnd}
-              onChange={e => setOctoberHalfTermEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Christmas Break */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">Christmas Break</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={christmasBreakStart}
-              onChange={e => setChristmasBreakStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={christmasBreakEnd}
-              onChange={e => setChristmasBreakEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* February Half-Term */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">February Half-Term</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={februaryHalfTermStart}
-              onChange={e => setFebruaryHalfTermStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={februaryHalfTermEnd}
-              onChange={e => setFebruaryHalfTermEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Easter Break */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">Easter Break</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={easterBreakStart}
-              onChange={e => setEasterBreakStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={easterBreakEnd}
-              onChange={e => setEasterBreakEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* May Half-Term */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">May Half-Term</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={mayHalfTermStart}
-              onChange={e => setMayHalfTermStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={mayHalfTermEnd}
-              onChange={e => setMayHalfTermEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Summer Break */}
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h4 className="font-medium text-lg mb-3">Summer Break</h4>
-          <div className="mb-3">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Start Date
-            </label>
-            <input
-              type="date"
-              value={summerBreakStart}
-              onChange={e => setSummerBreakStart(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              End Date
-            </label>
-            <input
-              type="date"
-              value={summerBreakEnd}
-              onChange={e => setSummerBreakEnd(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-      </div>
-
-      <button onClick={nextStep}
-    className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
-   Next
-</button>
-    </div>
-  );
+        );
       
       case 8:
+        return (
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-4">May Half-Term</h3>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={mayHalfTermStart}
+                onChange={(e) => setMayHalfTermStart(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={mayHalfTermEnd}
+                onChange={(e) => setMayHalfTermEnd(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={prevStep} 
+                className="px-6 py-3 rounded-md font-medium text-lg bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                Back
+              </button>
+              <button 
+                onClick={nextStep}
+                disabled={Boolean(mayHalfTermStart) !== Boolean(mayHalfTermEnd)}
+                className={`px-6 py-3 rounded-md font-medium text-lg ${
+                  Boolean(mayHalfTermStart) === Boolean(mayHalfTermEnd)
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        );
+      
+      case 9:
+        return (
+          <div className="text-center">
+            <h3 className="text-xl font-semibold mb-4">Summer Break</h3>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={summerBreakStart}
+                onChange={(e) => setSummerBreakStart(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={summerBreakEnd}
+                onChange={(e) => setSummerBreakEnd(e.target.value)}
+                className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={prevStep} 
+                className="px-6 py-3 rounded-md font-medium text-lg bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                Back
+              </button>
+              <button 
+                onClick={nextStep}
+                disabled={Boolean(summerBreakStart) !== Boolean(summerBreakEnd)}
+                className={`px-6 py-3 rounded-md font-medium text-lg ${
+                  Boolean(summerBreakStart) === Boolean(summerBreakEnd)
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        );
+      
+      case 10:
         return (
           <div className="text-center">
             <h3 className="text-xl font-bold mb-6">Review Your Information</h3>
@@ -814,23 +717,14 @@ const MaternityCalculator: React.FC = () => {
               <p className="font-medium">Pay Scheme: {paySchemeOptions.find(o => o.value === payScheme)?.label}</p>
               
               <h4 className="font-medium mt-4">School Breaks:</h4>
-              {octoberHalfTermStart && octoberHalfTermEnd && (
-                <p>October Half-Term: {formatDate(octoberHalfTermStart)} to {formatDate(octoberHalfTermEnd)}</p>
-              )}
-              {christmasBreakStart && christmasBreakEnd && (
-                <p>Christmas Break: {formatDate(christmasBreakStart)} to {formatDate(christmasBreakEnd)}</p>
-              )}
-              {februaryHalfTermStart && februaryHalfTermEnd && (
-                <p>February Half-Term: {formatDate(februaryHalfTermStart)} to {formatDate(februaryHalfTermEnd)}</p>
-              )}
               {easterBreakStart && easterBreakEnd && (
-                <p>Easter Break: {formatDate(easterBreakStart)} to {formatDate(easterBreakEnd)}</p>
+                <p>Easter: {formatDate(easterBreakStart)} to {formatDate(easterBreakEnd)}</p>
               )}
               {mayHalfTermStart && mayHalfTermEnd && (
                 <p>May Half-Term: {formatDate(mayHalfTermStart)} to {formatDate(mayHalfTermEnd)}</p>
               )}
               {summerBreakStart && summerBreakEnd && (
-                <p>Summer Break: {formatDate(summerBreakStart)} to {formatDate(summerBreakEnd)}</p>
+                <p>Summer: {formatDate(summerBreakStart)} to {formatDate(summerBreakEnd)}</p>
               )}
             </div>
             
@@ -851,7 +745,7 @@ const MaternityCalculator: React.FC = () => {
           </div>
         );
       
-      case 9:
+      case 11:
         // Final step - Calculate button
         return (
           <div className="text-center">
@@ -1035,4 +929,4 @@ const MaternityCalculator: React.FC = () => {
   );
 };
 
-export default MaternityCalculator;
+export default App;
